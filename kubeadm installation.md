@@ -1,3 +1,8 @@
+You have to install kubeadm on all master and worker nodes of k8s but you need to :
+1-On first master node: execute `kubeadm init`
+2-On other master nodes: join them to first node by executing `kubeadm join ... --control-plane`
+3-On worker nodes: join them by executing `kubeadmin join ...`
+
 #####  [^1]1-Set SELinux to `permissive` mode:
 ```bash
 # Set SELinux in permissive mode (effectively disabling it)
@@ -36,7 +41,7 @@ sudo swapoff /dev/dm-1
 sudoedit /etc/fstab
 #and In `/etc/fstab`, comment out the line whose filesystem type is `swap` by adding `#` at its start. For example:
 
-#Reload the configuration and verify:
+#Reload the configuration and verify you dont see any result for swapon --show:
 sudo systemctl daemon-reload
 swapon --show
 free -h
@@ -62,13 +67,16 @@ cd /opt
 mkdir sources
 cd /opt/sources
 
+# install wget
+sudo dnf install -y wget
+
 # download and install containerd
 wget https://github.com/containerd/containerd/releases/download/v2.4.1/containerd-2.4.1-linux-amd64.tar.gz
 tar Cxzvf /usr/local containerd-2.4.1-linux-amd64.tar.gz
 
 # download and enable containerd service file:
 wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-mv containerd.service /usr/lib/systemd/system/
+cp containerd.service /usr/lib/systemd/system/
 systemctl daemon-reload
 systemctl enable --now containerd
 
